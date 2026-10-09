@@ -6,4 +6,4 @@ pydantic>=2.10,<3
 python-dotenv>=1.0,<2
 
 ytmusicapi>=1.11,<2
-bgutil-ytdlp-pot-provider
+bgutil-ytdlp-pot-provider==2.0.2
