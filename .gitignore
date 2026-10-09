@@ -1,0 +1,26 @@
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+**/!.env.example
+
+# Frontend dependencies and build output
+**/node_modules/
+**/dist/
+
+# Python generated files and environments
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+
+# Local tools and editor files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ZIP backups
+*.zip
