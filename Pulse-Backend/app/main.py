@@ -240,8 +240,19 @@ def _recommend_sync(payload: RecommendationRequest) -> list[dict[str, Any]]:
     return candidates[:payload.limit]
 
 
+# Voroa build installs Node.js and the matching bgutil PO-token script under
+# the service user's home directory. Add Node to PATH so yt-dlp's plugin can run it.
+_NODE_BIN = os.path.join(os.path.expanduser("~"), ".local", "node-v22", "bin")
+if os.path.isdir(_NODE_BIN):
+    os.environ["PATH"] = _NODE_BIN + os.pathsep + os.environ.get("PATH", "")
+
+_BGUTIL_SERVER_HOME = os.path.join(
+    os.path.expanduser("~"), "bgutil-ytdlp-pot-provider", "server"
+)
+
+
 def _ydl_opts() -> dict[str, Any]:
-    return {
+    opts: dict[str, Any] = {
         "quiet": True,
         "no_warnings": True,
         "skip_download": True,
@@ -249,18 +260,14 @@ def _ydl_opts() -> dict[str, Any]:
         "socket_timeout": 20,
         "retries": 2,
         "nocheckcertificate": True,
-        "http_headers": {
-            "User-Agent": "Mozilla/5.0",
-        },
-        # Diagnostic client-selection test for YouTube's bot-verification block.
-        # This may not work for every video or server IP; revert this setting
-        # if yt-dlp reports that the client has no usable audio formats.
-        "extractor_args": {
-            "youtube": {
-                "player_client": ["web_safari"],
-            },
-        },
+        "http_headers": {"User-Agent": "Mozilla/5.0"},
     }
+    # The script provider runs inside this same Pulse backend service; no second
+    # Voroa service or public PO-token endpoint is created.
+    opts["extractor_args"] = {
+        "youtubepot-bgutilscript": {"server_home": _BGUTIL_SERVER_HOME}
+    }
+    return opts
 
 
 def _resolve_sync(video_id: str) -> tuple[str, dict[str, Any]]:
