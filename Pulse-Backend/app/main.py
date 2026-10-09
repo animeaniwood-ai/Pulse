@@ -249,7 +249,17 @@ def _ydl_opts() -> dict[str, Any]:
         "socket_timeout": 20,
         "retries": 2,
         "nocheckcertificate": True,
-        "http_headers": {"User-Agent": "Mozilla/5.0"},
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0",
+        },
+        # Diagnostic client-selection test for YouTube's bot-verification block.
+        # This may not work for every video or server IP; revert this setting
+        # if yt-dlp reports that the client has no usable audio formats.
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["web_safari"],
+            },
+        },
     }
 
 
